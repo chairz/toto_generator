@@ -68,15 +68,19 @@ def check_results(webpage):
     global RESULTS_TO_SEND
     webpage = webpage.split('\n')
     webpage = [elem for elem in webpage if elem.strip()]
-    for i in range(len(webpage)):
-        if DATE in webpage[i]:
-            RESULTS_TO_SEND += f'FOUND DATE! [{DATE}]' + '\n' * 2
-            winning_numbers = get_winning_numbers(webpage, i)
-            for ticket in TICKETS:
-                points = check_winning_numbers(winning_numbers, ticket)
-                result = get_result_from_points(points)
-                RESULTS_TO_SEND += result + '\n' * 2
-            telebot.send_message(RESULTS_TO_SEND)
+    while True:
+        telebot.send_check_message(f'Starting TOTO scraper...')
+        for i in range(len(webpage)):
+            if DATE in webpage[i]:
+                RESULTS_TO_SEND += f'FOUND DATE! [{DATE}]' + '\n' * 2
+                winning_numbers = get_winning_numbers(webpage, i)
+                RESULTS_TO_SEND += f'NUMBER OF TICKETS: {len(TICKETS)}' + '\n' * 2
+                for ticket in TICKETS:
+                    points = check_winning_numbers(winning_numbers, ticket)
+                    result = get_result_from_points(points)
+                    RESULTS_TO_SEND += result + '\n' * 2
+                telebot.send_message(RESULTS_TO_SEND)
+                return
 
 
 page = urlopen(URL)
