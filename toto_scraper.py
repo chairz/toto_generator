@@ -19,7 +19,6 @@ RESULTS_TO_SEND = ""
 
 def get_winning_numbers(webpage, current_index):
     global RESULTS_TO_SEND
-
     winning_numbers = []
     winning_number_start_index = current_index + 3
     additional_number_start_index = current_index + 10
@@ -34,7 +33,6 @@ def check_winning_numbers(winning_numbers, ticket):
     global RESULTS_TO_SEND
     additional_number = winning_numbers[-1]
     winning_numbers = winning_numbers[:6]
-    print(winning_numbers)
     RESULTS_TO_SEND += f'Checking ticket:{ticket}' + '\n'
     total_points = 0.0
 
@@ -68,21 +66,19 @@ def check_results(webpage):
     global RESULTS_TO_SEND
     webpage = webpage.split('\n')
     webpage = [elem for elem in webpage if elem.strip()]
-    while True:
-        telebot.send_check_message(f'Starting TOTO scraper...')
-        for i in range(len(webpage)):
-            if DATE in webpage[i]:
-                RESULTS_TO_SEND += f'FOUND DATE! [{DATE}]' + '\n' * 2
-                winning_numbers = get_winning_numbers(webpage, i)
-                RESULTS_TO_SEND += f'NUMBER OF TICKETS: {len(TICKETS)}' + '\n' * 2
-                for ticket in TICKETS:
-                    points = check_winning_numbers(winning_numbers, ticket)
-                    result = get_result_from_points(points)
-                    RESULTS_TO_SEND += result + '\n' * 2
-                telebot.send_message(RESULTS_TO_SEND)
-                return
+    for i in range(len(webpage)):
+        if DATE in webpage[i]:
+            RESULTS_TO_SEND += f'FOUND DATE! [{DATE}]' + '\n' * 2
+            winning_numbers = get_winning_numbers(webpage, i)
+            RESULTS_TO_SEND += f'NUMBER OF TICKETS: {len(TICKETS)}' + '\n' * 2
+            for ticket in TICKETS:
+                points = check_winning_numbers(winning_numbers, ticket)
+                result = get_result_from_points(points)
+                RESULTS_TO_SEND += result + '\n' * 2
+            telebot.send_message(RESULTS_TO_SEND)
 
 
+telebot.send_check_message(f'Running TOTO scraper...')
 page = urlopen(URL)
 html = page.read().decode("utf-8")
 soup = BeautifulSoup(html, "html.parser")
